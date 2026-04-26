@@ -1,0 +1,28 @@
+# TP2 - Complexité et Structures de Données
+
+## TD1 - Structures
+- Structure Point
+- Structure Heure
+
+## TD2 - Complexité et Récursivité
+- Minimum dans un tableau : O(n)
+- MiniMax d'une matrice : O(n×m)
+- Puissance récursive : O(n)
+- Exponentiation rapide : O(log n)
+- rec1 : O(n) | rec2 : O(2^n)
+
+## TD3 - Listes, Piles, Files
+- Listes chaînées
+- Piles (push/pop)
+- Files (enqueue/dequeue)
+- Palindrome
+
+## TD4 - Arbres Binaires de Recherche
+- Insertion / Recherche
+- Parcours infixe
+- Tri de liste via ABR
+- Vérification ABR
+- Plus petit élément
+
+Ajout README
+
