@@ -1,0 +1,846 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// ===================== EXERCICE 1 : POINT =====================
+
+typedef struct {
+    int x;
+    int y;
+} Point;
+
+// Saisir un point
+Point SaisirPoint() {
+    Point p;
+    printf("Donner les coordonnees du point (x y) : ");
+    scanf("%d %d", &p.x, &p.y);
+    return p;
+}
+
+// Afficher un point
+void AfficherPoint(Point p) {
+    printf("(%d, %d)\n", p.x, p.y);
+}
+
+// Distance par rapport à l'origine (passage par valeur)
+double DistanceOrigineValeur(Point p) {
+    return sqrt(p.x * p.x + p.y * p.y);
+}
+
+// Distance par rapport à l'origine (passage par adresse)
+double DistanceOrigineAdresse(Point *p) {
+    return sqrt(p->x * p->x + p->y * p->y);
+}
+
+// Trier un tableau de points par distance croissante
+void TrierPoints(Point T[], int taille) {
+    int i, j;
+    Point temp;
+    for(i = 0; i < taille - 1; i++) {
+        for(j = i + 1; j < taille; j++) {
+            if(DistanceOrigineValeur(T[i]) > DistanceOrigineValeur(T[j])) {
+                temp = T[i];
+                T[i] = T[j];
+                T[j] = temp;
+            }
+        }
+    }
+}
+
+// ===================== EXERCICE 2 : HEURE =====================
+
+typedef struct {
+    int hh;
+    int mm;
+    int ss;
+} Heure;
+
+// Heure -> secondes
+int HeureEnSecondes(Heure h) {
+    return h.hh * 3600 + h.mm * 60 + h.ss;
+}
+
+// Secondes -> Heure
+Heure SecondesEnHeure(int sec) {
+    Heure h;
+    h.hh = sec / 3600;
+    sec = sec % 3600;
+    h.mm = sec / 60;
+    h.ss = sec % 60;
+    return h;
+}
+
+// Addition de deux heures
+Heure AddHeures(Heure h1, Heure h2) {
+    int total = HeureEnSecondes(h1) + HeureEnSecondes(h2);
+    return SecondesEnHeure(total);
+}
+
+// Différence entre deux heures (temps écoulé)
+Heure DifferenceHeures(Heure h1, Heure h2) {
+    int diff = abs(HeureEnSecondes(h1) - HeureEnSecondes(h2));
+    return SecondesEnHeure(diff);
+}
+
+// ===================== PROGRAMME PRINCIPAL =====================
+
+int main() {
+    printf("========== TEST STRUCTURE POINT ==========\n");
+    
+    // Test saisie et affichage
+    Point p = SaisirPoint();
+    printf("Point saisi : ");
+    AfficherPoint(p);
+    
+    // Test distance
+    printf("Distance à l'origine (par valeur) : %.2f\n", DistanceOrigineValeur(p));
+    printf("Distance à l'origine (par adresse) : %.2f\n", DistanceOrigineAdresse(&p));
+    
+    // Test tableau de points
+    Point tab[3] = {{3,4}, {1,1}, {5,0}};
+    printf("\nTableau avant tri :\n");
+    for(int i = 0; i < 3; i++) AfficherPoint(tab[i]);
+    
+    TrierPoints(tab, 3);
+    printf("Tableau après tri (par distance) :\n");
+    for(int i = 0; i < 3; i++) AfficherPoint(tab[i]);
+    
+    printf("\n========== TEST STRUCTURE HEURE ==========\n");
+    
+    Heure h1 = {2, 30, 0};
+    Heure h2 = {1, 45, 30};
+    
+    printf("Heure 1 : %02d:%02d:%02d\n", h1.hh, h1.mm, h1.ss);
+    printf("Heure 2 : %02d:%02d:%02d\n", h2.hh, h2.mm, h2.ss);
+    printf("Heure 1 en secondes : %d\n", HeureEnSecondes(h1));
+    
+    Heure somme = AddHeures(h1, h2);
+    printf("Addition : %02d:%02d:%02d\n", somme.hh, somme.mm, somme.ss);
+    
+    Heure diff = DifferenceHeures(h1, h2);
+    printf("Différence : %02d:%02d:%02d\n", diff.hh, diff.mm, diff.ss);
+    
+    return 0;
+}
+
+#include <stdio.h>
+
+// ===================== EXERCICE 1 : INDICE DU MINIMUM =====================
+// Complexité : O(n)
+
+int IndiceMinimum(int tab[], int N) {
+    int index = 0;
+    for(int i = 1; i < N; i++) {
+        if(tab[i] < tab[index])
+            index = i;
+    }
+    return index;
+}
+
+// ===================== EXERCICE 2 : MINIMAX =====================
+// Complexité : O(n × m)
+
+#define LIGNES 3
+#define COLONNES 3
+
+int MiniMax(int matrice[LIGNES][COLONNES]) {
+    int i, j;
+    int max_ligne;
+    int minimax;
+    
+    for(i = 0; i < LIGNES; i++) {
+        max_ligne = matrice[i][0];
+        for(j = 1; j < COLONNES; j++) {
+            if(matrice[i][j] > max_ligne)
+                max_ligne = matrice[i][j];
+        }
+        if(i == 0)
+            minimax = max_ligne;
+        else if(max_ligne < minimax)
+            minimax = max_ligne;
+    }
+    return minimax;
+}
+
+// ===================== EXERCICE 3 : RÉCURSIVITÉ =====================
+
+// Puissance classique - Complexité : O(n)
+int PuissanceClassique(int a, int n) {
+    if(n == 0)
+        return 1;
+    return a * PuissanceClassique(a, n - 1);
+}
+
+// Exponentiation rapide - Complexité : O(log n)
+int PuissanceRapide(int a, int n) {
+    if(n == 0)
+        return 1;
+    if(n % 2 == 0)
+        return PuissanceRapide(a, n/2) * PuissanceRapide(a, n/2);
+    else
+        return a * PuissanceRapide(a, n/2) * PuissanceRapide(a, n/2);
+}
+
+// Somme des puissances - Complexité : O(n²)
+int SommePuissances(int a, int n) {
+    if(n == 0)
+        return 1;
+    return PuissanceClassique(a, n) + SommePuissances(a, n - 1);
+}
+
+// ===================== EXERCICE 4 : ANALYSE DE COMPLEXITÉ =====================
+
+// rec1 : calcule 2^n - Complexité : O(n)
+int rec1(int n) {
+    if(n == 0)
+        return 1;
+    return 2 * rec1(n - 1);
+}
+
+// rec2 : calcule 2^n - Complexité : O(2^n)
+int rec2(int n) {
+    if(n == 0)
+        return 1;
+    return rec2(n - 1) + rec2(n - 1);
+}
+
+// ===================== PROGRAMME PRINCIPAL =====================
+
+int main() {
+    printf("========== EXERCICE 1 : INDICE DU MINIMUM ==========\n");
+    int tab[] = {5, 2, 4, 2, 1, 7, 9, 4, 1, 1};
+    int taille = sizeof(tab) / sizeof(tab[0]);
+    printf("Tableau : ");
+    for(int i = 0; i < taille; i++) printf("%d ", tab[i]);
+    printf("\nIndice de la première occurrence du minimum : %d\n", IndiceMinimum(tab, taille));
+    
+    printf("\n========== EXERCICE 2 : MINIMAX ==========\n");
+    int matrice[LIGNES][COLONNES] = {{2, 3, 4}, {5, 6, 7}, {8, 9, 10}};
+    printf("MiniMax de la matrice : %d\n", MiniMax(matrice));
+    
+    printf("\n========== EXERCICE 3 : RÉCURSIVITÉ ==========\n");
+    int a = 2, n = 5;
+    printf("%d^%d (classique) = %d\n", a, n, PuissanceClassique(a, n));
+    printf("%d^%d (rapide) = %d\n", a, n, PuissanceRapide(a, n));
+    printf("Somme des puissances de %d^0 à %d^%d = %d\n", a, a, n, SommePuissances(a, n));
+    
+    printf("\n========== EXERCICE 4 : ANALYSE DE COMPLEXITÉ ==========\n");
+    printf("rec1(%d) = %d (complexité O(n))\n", n, rec1(n));
+    printf("rec2(%d) = %d (complexité O(2^n))\n", n, rec2(n));
+    
+    printf("\n========== RÉSUMÉ DES COMPLEXITÉS ==========\n");
+    printf("Exercice 1 (Indice du min) : O(n)\n");
+    printf("Exercice 2 (MiniMax) : O(n × m)\n");
+    printf("Exercice 3 (Puissance classique) : O(n)\n");
+    printf("Exercice 3 (Puissance rapide) : O(log n)\n");
+    printf("Exercice 3 (Somme) : O(n²)\n");
+    printf("Exercice 4 (rec1) : O(n)\n");
+    printf("Exercice 4 (rec2) : O(2^n)\n");
+    
+    return 0;
+}
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// ===================== LISTES CHAÎNÉES =====================
+
+typedef struct Element {
+    int val;
+    struct Element *suivant;
+} Element, *Liste;
+
+// Créer un nouvel élément
+Element* CreerElement(int valeur) {
+    Element *e = (Element*)malloc(sizeof(Element));
+    if(e == NULL) return NULL;
+    e->val = valeur;
+    e->suivant = NULL;
+    return e;
+}
+
+// Insérer en tête - Complexité : O(1)
+int InsererEnTete(Liste *L, int valeur) {
+    Element *e = CreerElement(valeur);
+    if(e == NULL) return 0;
+    e->suivant = *L;
+    *L = e;
+    return 1;
+}
+
+// Insérer en fin - Complexité : O(n)
+int InsererEnFin(Liste *L, int valeur) {
+    Element *e = CreerElement(valeur);
+    if(e == NULL) return 0;
+    if(*L == NULL) {
+        *L = e;
+        return 1;
+    }
+    Element *ptr = *L;
+    while(ptr->suivant != NULL)
+        ptr = ptr->suivant;
+    ptr->suivant = e;
+    return 1;
+}
+
+// Rechercher une valeur - Complexité : O(n)
+int Rechercher(Liste L, int valeur) {
+    Element *ptr = L;
+    while(ptr != NULL) {
+        if(ptr->val == valeur)
+            return 1;
+        ptr = ptr->suivant;
+    }
+    return 0;
+}
+
+// Supprimer la valeur minimum - Complexité : O(n)
+int SupprimerMinimum(Liste *L) {
+    if(*L == NULL) return 0;
+    
+    Element *ptr = *L;
+    Element *pMin = NULL;
+    Element *precMin = NULL;
+    Element *prec = NULL;
+    int min = ptr->val;
+    
+    // Trouver le minimum
+    while(ptr != NULL) {
+        if(ptr->val < min) {
+            min = ptr->val;
+            pMin = ptr;
+            precMin = prec;
+        }
+        prec = ptr;
+        ptr = ptr->suivant;
+    }
+    
+    // Supprimer le minimum
+    if(pMin == *L) {
+        *L = (*L)->suivant;
+    } else {
+        precMin->suivant = pMin->suivant;
+    }
+    free(pMin);
+    return 1;
+}
+
+// Fusion de deux listes en alternance - Complexité : O(n+m)
+Liste FusionAlternance(Liste L1, Liste L2) {
+    Liste resultat = NULL;
+    Element *ptr1 = L1, *ptr2 = L2;
+    
+    while(ptr1 != NULL && ptr2 != NULL) {
+        InsererEnFin(&resultat, ptr1->val);
+        InsererEnFin(&resultat, ptr2->val);
+        ptr1 = ptr1->suivant;
+        ptr2 = ptr2->suivant;
+    }
+    
+    while(ptr1 != NULL) {
+        InsererEnFin(&resultat, ptr1->val);
+        ptr1 = ptr1->suivant;
+    }
+    
+    while(ptr2 != NULL) {
+        InsererEnFin(&resultat, ptr2->val);
+        ptr2 = ptr2->suivant;
+    }
+    
+    return resultat;
+}
+
+// Détruire une liste - Complexité : O(n)
+void DetruireListe(Liste *L) {
+    Element *ptr;
+    while(*L != NULL) {
+        ptr = *L;
+        *L = (*L)->suivant;
+        free(ptr);
+    }
+}
+
+// Afficher une liste - Complexité : O(n)
+void AfficherListe(Liste L) {
+    Element *ptr = L;
+    while(ptr != NULL) {
+        printf("%d -> ", ptr->val);
+        ptr = ptr->suivant;
+    }
+    printf("NULL\n");
+}
+
+// Créer une liste de n entiers aléatoires - Complexité : O(n)
+Liste CreerListeAleatoire(int n) {
+    Liste L = NULL;
+    for(int i = 0; i < n; i++) {
+        InsererEnTete(&L, rand() % 101); // entre 0 et 100
+    }
+    return L;
+}
+
+// ===================== PILES (STACK) =====================
+
+typedef struct PileNode {
+    int data;
+    struct PileNode *next;
+} PileNode, *Pile;
+
+// Empiler - Complexité : O(1)
+void Push(Pile *p, int value) {
+    PileNode *newNode = (PileNode*)malloc(sizeof(PileNode));
+    if(newNode == NULL) return;
+    newNode->data = value;
+    newNode->next = *p;
+    *p = newNode;
+}
+
+// Dépiler - Complexité : O(1)
+int Pop(Pile *p) {
+    if(*p == NULL) {
+        printf("Pile vide !\n");
+        return -1;
+    }
+    PileNode *top = *p;
+    int value = top->data;
+    *p = top->next;
+    free(top);
+    return value;
+}
+
+// Vérifier si la pile est vide
+int PileVide(Pile p) {
+    return p == NULL;
+}
+
+// ===================== FILES (QUEUE) =====================
+
+typedef struct FileNode {
+    char data;
+    struct FileNode *next;
+} FileNode;
+
+typedef struct {
+    FileNode *first;
+    FileNode *last;
+} File;
+
+// Initialiser une file
+void InitFile(File *q) {
+    q->first = NULL;
+    q->last = NULL;
+}
+
+// Enfiler - Complexité : O(1)
+int Enqueue(File *q, char value) {
+    FileNode *newNode = (FileNode*)malloc(sizeof(FileNode));
+    if(newNode == NULL) return 0;
+    newNode->data = value;
+    newNode->next = NULL;
+    
+    if(q->first == NULL) {
+        q->first = q->last = newNode;
+    } else {
+        q->last->next = newNode;
+        q->last = newNode;
+    }
+    return 1;
+}
+
+// Défiler - Complexité : O(1)
+int Dequeue(File *q, char *value) {
+    if(q->first == NULL) return 0;
+    FileNode *tmp = q->first;
+    *value = tmp->data;
+    q->first = tmp->next;
+    if(q->first == NULL)
+        q->last = NULL;
+    free(tmp);
+    return 1;
+}
+
+// Vérifier si une chaîne est un palindrome
+int EstPalindrome(char chaine[]) {
+    int longueur = 0;
+    while(chaine[longueur] != '\0') longueur++;
+    
+    Pile p = NULL;
+    File q;
+    InitFile(&q);
+    
+    // Remplir pile et file
+    for(int i = 0; i < longueur; i++) {
+        Push(&p, chaine[i]);
+        Enqueue(&q, chaine[i]);
+    }
+    
+    // Comparer
+    for(int i = 0; i < longueur; i++) {
+        if(Pop(&p) != (Dequeue(&q, &chaine[0]) ? chaine[0] : 0))
+            return 0;
+    }
+    return 1;
+}
+
+// ===================== PROGRAMME PRINCIPAL =====================
+
+int main() {
+    srand(time(NULL));
+    
+    printf("========== EXERCICE 1 : CRÉATION D'UNE LISTE ==========\n");
+    Liste L = CreerListeAleatoire(10);
+    printf("Liste de 10 entiers aléatoires :\n");
+    AfficherListe(L);
+    printf("Complexité : O(n)\n\n");
+    
+    printf("========== EXERCICE 2 : RECHERCHE ==========\n");
+    int recherche = 50;
+    printf("Recherche de %d : %s\n", recherche, Rechercher(L, recherche) ? "trouvé" : "non trouvé");
+    printf("Complexité : O(n)\n\n");
+    
+    printf("========== EXERCICE 3 : SUPPRESSION DU MINIMUM ==========\n");
+    printf("Liste avant suppression du min :\n");
+    AfficherListe(L);
+    SupprimerMinimum(&L);
+    printf("Liste après suppression :\n");
+    AfficherListe(L);
+    printf("Complexité : O(n)\n\n");
+    
+    printf("========== EXERCICE 4 : FUSION DE LISTES ==========\n");
+    Liste L1 = CreerListeAleatoire(5);
+    Liste L2 = CreerListeAleatoire(3);
+    printf("Liste A : ");
+    AfficherListe(L1);
+    printf("Liste B : ");
+    AfficherListe(L2);
+    Liste L3 = FusionAlternance(L1, L2);
+    printf("Fusion alternée : ");
+    AfficherListe(L3);
+    
+    printf("========== PILES ET FILES ==========\n");
+    Pile pile = NULL;
+    Push(&pile, 10);
+    Push(&pile, 20);
+    Push(&pile, 30);
+    printf("Pop pile : %d\n", Pop(&pile));
+    
+    File file;
+    InitFile(&file);
+    Enqueue(&file, 'A');
+    Enqueue(&file, 'B');
+    char c;
+    Dequeue(&file, &c);
+    printf("Dequeue file : %c\n", c);
+    
+    char chaine[] = "radar";
+    printf("\n'%s' est %sun palindrome\n", chaine, EstPalindrome(chaine) ? "" : "ne ");
+    
+    DetruireListe(&L);
+    DetruireListe(&L1);
+    DetruireListe(&L2);
+    DetruireListe(&L3);
+    
+    return 0;
+}
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// ===================== STRUCTURE DE L'ARBRE =====================
+
+typedef int element_type;
+
+typedef struct tree_node {
+    element_type element;
+    struct tree_node *left;
+    struct tree_node *right;
+} tree_node, *SEARCH_TREE;
+
+// ===================== 1. INSERTION =====================
+// Complexité : O(log n) à O(n)
+
+SEARCH_TREE Insert(element_type x, SEARCH_TREE T) {
+    if(T == NULL) {
+        T = (SEARCH_TREE)malloc(sizeof(tree_node));
+        if(T == NULL) {
+            printf("Erreur d'allocation mémoire\n");
+            exit(0);
+        }
+        T->element = x;
+        T->left = T->right = NULL;
+    }
+    else if(x < T->element)
+        T->left = Insert(x, T->left);
+    else if(x > T->element)
+        T->right = Insert(x, T->right);
+    // Si x == T->element, on ne fait rien (pas de doublon)
+    
+    return T;
+}
+
+// ===================== 2. RECHERCHE =====================
+// Complexité : O(log n) à O(n)
+
+SEARCH_TREE Rechercher(SEARCH_TREE T, element_type e) {
+    if(T == NULL)
+        return NULL;
+    if(e == T->element)
+        return T;
+    else if(e < T->element)
+        return Rechercher(T->left, e);
+    else
+        return Rechercher(T->right, e);
+}
+
+// ===================== 3. COMPTER LES OCCURRENCES =====================
+// Complexité : O(n)
+
+int CompterOccurrences(SEARCH_TREE T, element_type e) {
+    int count = 0;
+    if(T != NULL) {
+        count += CompterOccurrences(T->left, e);
+        if(T->element == e)
+            count++;
+        count += CompterOccurrences(T->right, e);
+    }
+    return count;
+}
+
+// ===================== 4. PARCOURS INFIXÉ =====================
+// Complexité : O(n)
+
+void ParcoursInfixe(SEARCH_TREE T) {
+    if(T != NULL) {
+        ParcoursInfixe(T->left);
+        printf("%d ", T->element);
+        ParcoursInfixe(T->right);
+    }
+}
+
+// ===================== 5. PLUS PETIT ÉLÉMENT =====================
+// Complexité : O(log n) à O(n)
+
+element_type PlusPetitElement(SEARCH_TREE T) {
+    if(T == NULL) {
+        printf("Arbre vide !\n");
+        return -1;
+    }
+    while(T->left != NULL)
+        T = T->left;
+    return T->element;
+}
+
+// ===================== 6. PLUS GRAND ÉLÉMENT =====================
+// Complexité : O(log n) à O(n)
+
+element_type PlusGrandElement(SEARCH_TREE T) {
+    if(T == NULL) {
+        printf("Arbre vide !\n");
+        return -1;
+    }
+    while(T->right != NULL)
+        T = T->right;
+    return T->element;
+}
+
+// ===================== 7. VÉRIFIER SI C'EST UN ABR =====================
+// Complexité : O(n)
+
+int EstABR(SEARCH_TREE T) {
+    if(T == NULL)
+        return 1;
+    if(T->left != NULL && PlusGrandElement(T->left) >= T->element)
+        return 0;
+    if(T->right != NULL && PlusPetitElement(T->right) <= T->element)
+        return 0;
+    return EstABR(T->left) && EstABR(T->right);
+}
+
+// ===================== 8. CONSTRUIRE LISTE TRIÉE =====================
+// Complexité : O(n)
+
+typedef struct ListNode {
+    element_type val;
+    struct ListNode *suivant;
+} ListNode, *Liste;
+
+void InsererListeFin(Liste *L, element_type val) {
+    ListNode *newNode = (ListNode*)malloc(sizeof(ListNode));
+    newNode->val = val;
+    newNode->suivant = NULL;
+    
+    if(*L == NULL) {
+        *L = newNode;
+        return;
+    }
+    
+    ListNode *ptr = *L;
+    while(ptr->suivant != NULL)
+        ptr = ptr->suivant;
+    ptr->suivant = newNode;
+}
+
+void ArbreVersListeTriee(SEARCH_TREE T, Liste *L) {
+    if(T != NULL) {
+        ArbreVersListeTriee(T->left, L);
+        InsererListeFin(L, T->element);
+        ArbreVersListeTriee(T->right, L);
+    }
+}
+
+void AfficherListe(Liste L) {
+    ListNode *ptr = L;
+    while(ptr != NULL) {
+        printf("%d -> ", ptr->val);
+        ptr = ptr->suivant;
+    }
+    printf("NULL\n");
+}
+
+void DetruireListe(Liste *L) {
+    ListNode *ptr;
+    while(*L != NULL) {
+        ptr = *L;
+        *L = (*L)->suivant;
+        free(ptr);
+    }
+}
+
+// ===================== 9. CONSTRUIRE ABR À PARTIR D'UNE LISTE =====================
+// Complexité : O(n log n)
+
+SEARCH_TREE ArbreDepuisListe(Liste L) {
+    SEARCH_TREE T = NULL;
+    ListNode *ptr = L;
+    while(ptr != NULL) {
+        T = Insert(ptr->val, T);
+        ptr = ptr->suivant;
+    }
+    return T;
+}
+
+// ===================== 10. TRIER UNE LISTE =====================
+// Complexité : O(n log n)
+
+Liste TrierListe(Liste L) {
+    SEARCH_TREE T = ArbreDepuisListe(L);
+    Liste resultat = NULL;
+    ArbreVersListeTriee(T, &resultat);
+    DetruireArbre(T);
+    return resultat;
+}
+
+// ===================== DÉTRUIRE L'ARBRE =====================
+// Complexité : O(n)
+
+void DetruireArbre(SEARCH_TREE T) {
+    if(T != NULL) {
+        DetruireArbre(T->left);
+        DetruireArbre(T->right);
+        free(T);
+    }
+}
+
+// ===================== AFFICHER ARBRE (avec indentation) =====================
+
+void AfficherArbre(SEARCH_TREE T, int niveau) {
+    if(T != NULL) {
+        AfficherArbre(T->right, niveau + 1);
+        for(int i = 0; i < niveau; i++)
+            printf("    ");
+        printf("%d\n", T->element);
+        AfficherArbre(T->left, niveau + 1);
+    }
+}
+
+// ===================== PROGRAMME PRINCIPAL =====================
+
+int main() {
+    srand(time(NULL));
+    
+    printf("========== EXERCICE 1 : ARBRE BINAIRE DE RECHERCHE ==========\n\n");
+    
+    // 1. Créer un ABR avec 10 entiers aléatoires
+    SEARCH_TREE A = NULL;
+    printf("Insertion de 10 entiers aléatoires dans l'arbre :\n");
+    for(int i = 0; i < 10; i++) {
+        int val = rand() % 50;
+        printf("%d ", val);
+        A = Insert(val, A);
+    }
+    
+    printf("\n\nAffichage de l'arbre :\n");
+    AfficherArbre(A, 0);
+    
+    printf("\nParcours infixe (trié) : ");
+    ParcoursInfixe(A);
+    printf("\n");
+    
+    // 2. Rechercher un élément
+    int recherche;
+    printf("\nEntrez un entier à rechercher : ");
+    scanf("%d", &recherche);
+    
+    if(Rechercher(A, recherche) != NULL)
+        printf("L'élément %d existe dans l'arbre\n", recherche);
+    else
+        printf("L'élément %d n'existe pas dans l'arbre\n", recherche);
+    
+    // 3. Compter les occurrences
+    int occurrences = CompterOccurrences(A, recherche);
+    printf("Nombre d'occurrences de %d : %d\n", recherche, occurrences);
+    
+    // 4. Plus petit et plus grand élément
+    printf("\nPlus petit élément : %d\n", PlusPetitElement(A));
+    printf("Plus grand élément : %d\n", PlusGrandElement(A));
+    
+    // 5. Vérifier si c'est un ABR
+    printf("\nL'arbre est %sABR\n", EstABR(A) ? "" : "un ");
+    
+    // 6. Construire une liste triée à partir de l'arbre
+    Liste LT = NULL;
+    ArbreVersListeTriee(A, &LT);
+    printf("\nListe triée issue de l'arbre :\n");
+    AfficherListe(LT);
+    
+    // 7. Créer une liste non triée et la trier
+    Liste L = NULL;
+    printf("\nCréation d'une liste non triée de 10 entiers aléatoires :\n");
+    for(int i = 0; i < 10; i++) {
+        int val = rand() % 50;
+        printf("%d ", val);
+        ListNode *newNode = (ListNode*)malloc(sizeof(ListNode));
+        newNode->val = val;
+        newNode->suivant = L;
+        L = newNode;
+    }
+    printf("\nListe non triée :\n");
+    AfficherListe(L);
+    
+    Liste LTrie = TrierListe(L);
+    printf("Liste triée :\n");
+    AfficherListe(LTrie);
+    
+    // Nettoyage
+    DetruireArbre(A);
+    DetruireListe(&LT);
+    DetruireListe(&L);
+    DetruireListe(&LTrie);
+    
+    printf("\n========== RÉSUMÉ DES COMPLEXITÉS ==========\n");
+    printf("Insertion : O(log n) à O(n)\n");
+    printf("Recherche : O(log n) à O(n)\n");
+    printf("Comptage occurrences : O(n)\n");
+    printf("Parcours infixe : O(n)\n");
+    printf("Plus petit/grand élément : O(log n) à O(n)\n");
+    printf("Liste triée depuis arbre : O(n)\n");
+    printf("Arbre depuis liste : O(n log n)\n");
+    
+    return 0;
+}
+
+
+
